@@ -1,44 +1,55 @@
+import Link from "next/link";
+import BlastBadge from "./BlastBadge";
 import type { Agent } from "@/types/agent";
 
-const BLAST_COLORS: Record<string, string> = {
-  none: "#22c55e",
-  low: "#84cc16",
-  medium: "#f59e0b",
-  high: "#f97316",
-  critical: "#ef4444",
-};
-
 export default function AgentCard({ agent }: { agent: Agent }) {
+  const maxBlast = agent.capabilities.reduce((worst, cap) => {
+    const order = ["none", "low", "medium", "high", "critical"];
+    return order.indexOf(cap.blast) > order.indexOf(worst) ? cap.blast : worst;
+  }, "none" as string);
+
   return (
-    <div style={{
-      border: "1px solid #e5e7eb",
-      borderRadius: "8px",
-      padding: "1.25rem",
-      background: "#fff",
-      display: "flex",
-      flexDirection: "column",
-      gap: "0.75rem",
-    }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h2 style={{ margin: 0, fontSize: "1rem", fontWeight: 600 }}>{agent.id}</h2>
-        <span style={{ fontSize: "0.75rem", color: "#6b7280" }}>sandbox: {agent.sandbox}</span>
+    <Link href={`/agents/${agent.id}`} style={{ display: "block", textDecoration: "none" }}>
+      <div style={{
+        border: "1px solid var(--border)",
+        borderRadius: "8px",
+        padding: "1.25rem",
+        background: "var(--bg-surface)",
+        display: "flex",
+        flexDirection: "column",
+        gap: "1rem",
+      }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+          <div>
+            <h2 style={{ fontSize: "0.9375rem", fontWeight: 600, letterSpacing: "-0.01em" }}>{agent.id}</h2>
+            <span style={{ fontSize: "0.8125rem", color: "var(--text-muted)", marginTop: "2px", display: "block" }}>
+              {agent.capabilities.length} {agent.capabilities.length === 1 ? "capability" : "capabilities"}
+            </span>
+          </div>
+          <BlastBadge level={maxBlast} />
+        </div>
+
+        <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "0.375rem" }}>
+          {agent.capabilities.map((cap) => (
+            <li key={cap.id} style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "0.375rem 0.625rem",
+              background: "var(--bg-raised)",
+              borderRadius: "5px",
+              fontSize: "0.8125rem",
+            }}>
+              <code style={{ color: "var(--text-secondary)" }}>{cap.id}</code>
+              <BlastBadge level={cap.blast} />
+            </li>
+          ))}
+        </ul>
+
+        <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
+          sandbox: <span style={{ color: "var(--text-secondary)" }}>{agent.sandbox}</span>
+        </div>
       </div>
-      <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-        {agent.capabilities.map((cap) => (
-          <li key={cap.id} style={{ display: "flex", justifyContent: "space-between", fontSize: "0.875rem" }}>
-            <span style={{ fontFamily: "monospace" }}>{cap.id}</span>
-            <span style={{
-              background: BLAST_COLORS[cap.blast] + "22",
-              color: BLAST_COLORS[cap.blast],
-              border: `1px solid ${BLAST_COLORS[cap.blast]}`,
-              borderRadius: "4px",
-              padding: "0 0.4rem",
-              fontSize: "0.75rem",
-              fontWeight: 500,
-            }}>{cap.blast}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
+    </Link>
   );
 }
