@@ -55,6 +55,22 @@ export default async function AgentPage({ params }: { params: { id: string } }) 
       </div>
 
       <div>
+        <Link href={`/agents/${params.id}/chat`} style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "0.4rem",
+          padding: "0.5rem 1rem",
+          background: "var(--accent)",
+          borderRadius: "7px",
+          fontSize: "0.875rem",
+          fontWeight: 500,
+          color: "#fff",
+        }}>
+          ✦ Open Chat
+        </Link>
+      </div>
+
+      <div>
         <h2 style={{ fontSize: "0.8125rem", fontWeight: 600, color: "var(--text-muted)", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "0.75rem" }}>
           Capabilities
         </h2>
